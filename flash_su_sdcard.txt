@@ -1,0 +1,18 @@
+sudo service klipper stop && cd ~/klipper && git pull && make clean && make menuconfig
+
+cd ~/klipper
+
+git pull
+
+make clean
+
+make menuconfig
+
+make
+
+#for second MCU
+make flash
+
+./scripts/flash-sdcard.sh /dev/ttyACM0 btt-skr-mini-mz && sudo service klipper start
+
+sudo service klipper start
