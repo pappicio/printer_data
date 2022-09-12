@@ -15,15 +15,30 @@ fi
 ###fi
 
 
-
-if [ -e /home/"${USER}"/klipper_config/belt_tension/old_resonances.png ]
+if [ -e /home/"${USER}"/klipper_config/belt_tension/4_old_resonances.png ]
 then
-    cp /home/"${USER}"/klipper_config/belt_tension/old_resonances.png /home/"${USER}"/klipper_config/belt_tension/old_old_resonances.png
+    cp /home/"${USER}"/klipper_config/belt_tension/4_old_resonances.png /home/"${USER}"/klipper_config/belt_tension/5_old_resonances.png
+fi
+
+if [ -e /home/"${USER}"/klipper_config/belt_tension/3_old_resonances.png ]
+then
+    cp /home/"${USER}"/klipper_config/belt_tension/3_old_resonances.png /home/"${USER}"/klipper_config/belt_tension/4_old_resonances.png
+fi
+
+if [ -e /home/"${USER}"/klipper_config/belt_tension/2_old_resonances.png ]
+then
+    cp /home/"${USER}"/klipper_config/belt_tension/2_old_resonances.png /home/"${USER}"/klipper_config/belt_tension/3_old_resonances.png
+fi
+
+
+if [ -e /home/"${USER}"/klipper_config/belt_tension/1_old_resonances.png ]
+then
+    cp /home/"${USER}"/klipper_config/belt_tension/1_old_resonances.png /home/"${USER}"/klipper_config/belt_tension/2_old_resonances.png
 fi
 
 if [ -e /home/"${USER}"/klipper_config/belt_tension/resonances.png ]
 then
-    cp /home/"${USER}"/klipper_config/belt_tension/resonances.png /home/"${USER}"/klipper_config/belt_tension/old_resonances.png 
+    cp /home/"${USER}"/klipper_config/belt_tension/resonances.png /home/"${USER}"/klipper_config/belt_tension/1_old_resonances.png 
 fi
  
 

@@ -14,14 +14,29 @@ fi
 ###    chown "${USER}":"${USER}" /home/pi/klipper_config/input_shaper/csv
 ###fi
 
-if [ -e /home/"${USER}"/klipper_config/input_shaper/old_resonances_y.png ]
+if [ -e /home/"${USER}"/klipper_config/input_shaper/4_old_resonances_y.png ]
 then
-    cp /home/"${USER}"/klipper_config/input_shaper/old_resonances_y.png /home/"${USER}"/klipper_config/input_shaper/old_old_resonances_y.png
+    cp /home/"${USER}"/klipper_config/input_shaper/4_old_resonances_y.png /home/"${USER}"/klipper_config/input_shaper/5_old_resonances_y.png
+fi
+
+if [ -e /home/"${USER}"/klipper_config/input_shaper/3_old_resonances_y.png ]
+then
+    cp /home/"${USER}"/klipper_config/input_shaper/3_old_resonances_y.png /home/"${USER}"/klipper_config/input_shaper/4_old_resonances_y.png
+fi
+
+if [ -e /home/"${USER}"/klipper_config/input_shaper/2_old_resonances_y.png ]
+then
+    cp /home/"${USER}"/klipper_config/input_shaper/2_old_resonances_y.png /home/"${USER}"/klipper_config/input_shaper/3_old_resonances_y.png
+fi
+
+if [ -e /home/"${USER}"/klipper_config/input_shaper/1_old_resonances_y.png ]
+then
+    cp /home/"${USER}"/klipper_config/input_shaper/1_old_resonances_y.png /home/"${USER}"/klipper_config/input_shaper/2_old_resonances_y.png
 fi
 
 if [ -e /home/"${USER}"/klipper_config/input_shaper/resonances_y.png ]
 then
-    cp /home/"${USER}"/klipper_config/input_shaper/resonances_y.png /home/"${USER}"/klipper_config/input_shaper/old_resonances_y.png
+    cp /home/"${USER}"/klipper_config/input_shaper/resonances_y.png /home/"${USER}"/klipper_config/input_shaper/1_old_resonances_y.png
 fi
 
 /home/"${USER}"/klipper/scripts/calibrate_shaper.py $NEWX -o /home/"${USER}"/klipper_config/input_shaper/resonances_y.png
