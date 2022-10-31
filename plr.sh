@@ -1,13 +1,23 @@
 #!/bin/bash
-###SD_PATH=~octoprint/.octoprint/uploads
-
 ############################################
 SD_PATH=/home/pi/gcode_files
-
 ############################################
 
 cat ${SD_PATH}/${2} > /tmp/plrtmpA.$$
-cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' | grep -m 1 ' Z' | sed -ne 's/.* Z\([^ ]*\)/SET_KINEMATIC_POSITION Z=\1/p' > ${SD_PATH}/plr.gcode
+
+isInFile=$(cat /tmp/plrtmpA.$$ | grep -c "thumbnail")
+if [ $isInFile -eq 0 ]; then
+     echo 'M109 S190.0' > ${SD_PATH}/plr.gcode
+     cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' | grep -m 1 ' Z' | sed -ne 's/.* Z\([^ ]*\)/SET_KINEMATIC_POSITION Z=\1/p' >> ${SD_PATH}/plr.gcode
+else
+    sed -i '1s/^/;start copy\n/' /tmp/plrtmpA.$$
+    sed -n '/;start copy/, /thumbnail end/ p' < /tmp/plrtmpA.$$ > ${SD_PATH}/plr.gcode
+    echo ';' >> ${SD_PATH}/plr.gcode
+    echo '' >> ${SD_PATH}/plr.gcode
+    echo 'M109 S190.0' >> ${SD_PATH}/plr.gcode
+    cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' | grep -m 1 ' Z' | sed -ne 's/.* Z\([^ ]*\)/SET_KINEMATIC_POSITION Z=\1/p' >> ${SD_PATH}/plr.gcode    
+fi
+
 echo 'G91' >> ${SD_PATH}/plr.gcode
 echo 'G1 Z5' >> ${SD_PATH}/plr.gcode
 echo 'G90' >> ${SD_PATH}/plr.gcode
@@ -25,3 +35,4 @@ echo 'G1 Z-5' >> ${SD_PATH}/plr.gcode
 echo 'G90' >> ${SD_PATH}/plr.gcode
 # cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' >> ${SD_PATH}/plr.gcode
 tac /tmp/plrtmpA.$$ | sed -e '/ Z'${1}'[^0-9]*$/q' | tac | tail -n+2 | sed -ne '/ Z/,$ p' >> ${SD_PATH}/plr.gcode
+/bin/sleep 1
