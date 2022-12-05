@@ -1,0 +1,57 @@
+/bin/bash /home/pi/printer_data/config/flashami.sh
+
+sudo service klipper stop && cd ~/klipper && git pull && make clean && make menuconfig
+
+make
+
+./scripts/flash-sdcard.sh /dev/ttyUSB0 robin-nano-13
+
+sudo service klipper stop && cd ~/klipper && git pull && make clean && make menuconfig
+
+make flash
+
+##########################################################################################
+##########################################################################################
+
+
+
+
+cd ~/klipper
+
+git pull
+
+make clean
+
+make menuconfig
+
+make
+
+#for second MCU
+make flash
+
+#####./scripts/flash-sdcard.sh /dev/ttyACM0 btt-skr-mini-mz && sudo service klipper start
+
+!PC6, !PD13
+
+# - select serial (on USART3 PB11/PB10) communication
+# - Serial on USART (PB11/PB10) at 250.000 Baud rate.
+
+./scripts/flash-sdcard.sh /dev/ttyUSB0 robin-nano-13 
+ 
+sudo service klipper start
+
+
+sudo service klipper start
+
+
+    'robin-nano-13': {
+        'mcu': "stm32f407xx",
+        'spi_bus': "swspi",
+        'spi_pins': "PC8,PD2,PC12",
+        "cs_pin": "PC11",
+        "firmware_path": "robin_nano35.bin",
+        "current_firmware_path": "robin_nano35.cur"
+    },
+
+
+ ./scripts/flash-sdcard.sh /dev/ttyUSB0 robin-nano-13
