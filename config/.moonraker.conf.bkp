@@ -44,7 +44,7 @@ origin = https://github.com/mainsail-crew/moonraker-timelapse.git
 
 [power spegni_stampante]
 type = klipper_device
-object_name = gcode_macro _spegnistampante2
+object_name = gcode_macro spegnistampante
 locked_while_printing = true
 
 [power gestisci_LED]
