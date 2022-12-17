@@ -5,7 +5,8 @@ script_dir=$(dirname "$actual_path")
 read usb < $script_dir/serial_by_id.txt
 read boot < $script_dir/bootmode_id.txt
 
- 
+
+KLIPPY_ENV="${HOME}/klippy-env"
 
 
 if test -f "$script_dir/firsttime.txt"; then
@@ -105,12 +106,20 @@ pid=$!
 wait $pid
 
 cd /home/pi/klipper
+ 
+if (( python_version == 3 )); then
+    ###make PYTHON=python3 menuconfig
+    make PYTHON=python3
+  elif (( python_version == 2 )); then
+    ###make PYTHON=python2 menuconfig
+    make PYTHON=python2
+  fi
 
-make
 pid=$!
 wait $pid
+
 sudo service klipper stop 
-###make flash FLASH_DEVICE="${usb}"
+
  if make flash FLASH_DEVICE="${usb}"; then
     echo "Flashing successfull!"
   else
@@ -125,7 +134,7 @@ sudo service klipper stop
       exit
     fi
   fi
-
+ 
 pid=$!
 wait $pid
 
@@ -134,8 +143,8 @@ wait $pid
 
 ###/dev/serial/by-id/usb-Klipper_stm32f446xx_3E0044000A51373330333137-if00
 ### make flash FLASH_DEVICE=0483:df11
-pid=$!
-wait $pid
+###pid=$!
+###wait $pid
  
 sudo service klipper start
 pid=$!
@@ -152,3 +161,12 @@ echo "****************"
 echo "****************"
 
 bash $script_dir/mcu.sh
+
+
+function get_klipper_python_ver() {
+  [[ ! -d ${KLIPPY_ENV} ]] && return
+
+  local version
+  version=$("${KLIPPY_ENV}"/bin/python --version 2>&1 | cut -d" " -f2 | cut -d"." -f1)
+  echo "${version}"
+}
