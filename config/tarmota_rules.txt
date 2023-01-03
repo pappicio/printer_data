@@ -1,0 +1,55 @@
+/////////////////////////////////////////////////////////////////////////
+////ritardo 20 secondi spegnimento relay mentre spegne raspberry
+/// sonoff mini o basic (o quello che vuoi ma...) con tasmota:
+///relay1 = relay fisico
+///relay2=virtuale assegnato ad un pin ma inesistente
+///relay3=virtuale assegnato ad un pin ma inesistente
+///pulsante fisico del sonoff assegnato come
+///button-3, associato al relay3 virtuale!!!
+ 
+#####################################################
+preparazione smart plug TASMOTA 
+#####################################################
+ 
+///caricare questo template (modello) sul sonoff tasmota (fatto su un sonoff mini)
+ 
+{"NAME":"Stampante3D","GPIO":[34,1,1,1,162,1,1,1,224,288,225,226,1,1],"FLAG":0,"BASE":18}
+ 
+### cmq deve avere: relay1 (collegato al reale relay), relay2 e relay3 (virtuali connessi ad altri pin vuoti)
+### button3 (connesso al pin del button)
+### switch3 (connesso allo switch fisico, cioè S1/S2)
+ 
+///poi da consolle scrivete o copiate i seguenti comandi:
+ 
+pulsetime2 10 
+[e poi premi INVIO]
+ 
+pulsetime3 10
+[e poi premi INVIO]
+ 
+///ora i 2 relay virtuali 2 e 3 sono temporizzati, vanno ad ON per 1 decimo di secondo e poi tornano a OFF, servono cosi!!!
+///sempre su console inseriamo questi rule
+///seleziona da 
+ 
+rule1 
+fno a 
+rule1 on
+ 
+///copia e incolla tutto nella nella console tasmota e PREMI INVIO 
+Rule1
+ ON system#boot DO var1 0 ENDON
+ ON power1#state==1 do var1 1 endon
+ ON power1#state==0 do var1 0 endon
+ ON power2#state==1 do if (var1==1) Delay 200; power1 toggle else power1 toggle endif;  endon 
+rule1 on
+ 
+#####################################################
+///seleziona da rule2 fino a rule2 on
+///copia e incolla tutto nella nella console tasmota e PREMI INVIO
+///_spegnistampante è la macro dello spegnimento di tutto....
+///rule2  serve solo quando premete il tasto sul sonoff, fa la procedura di spegnimento raspberry/tutto...
+ 
+IMPORTANTE:
+///192.168.1.195 è il mio IP di klipper, a te sarà diverso, quindi devi cambiarlo con il vero IP del tuo Raspberry/TVBOX Klipper
+#####################################################
+ 
