@@ -47,6 +47,11 @@ type = klipper_device
 object_name = gcode_macro spegnistampante
 locked_while_printing = true
 
+[power Spegnimento_brutale]
+type = tasmota
+address = 192.168.1.127
+locked_while_printing = true
+
 [power gestisci_LED]
 type = klipper_device
 object_name = gcode_macro set_neopixel
