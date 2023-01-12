@@ -5,8 +5,14 @@ script_dir=$(dirname "$actual_path")
 read usb < $script_dir/serial_by_id.txt
 read boot < $script_dir/bootmode_id.txt
 
+ 
 
 KLIPPY_ENV="${HOME}/klippy-env"
+
+python_version=$("${KLIPPY_ENV}"/bin/python --version 2>&1 | cut -d" " -f2 | cut -d"." -f1)
+
+echo Klipper Python version: $python_version
+###exit 0
 
 
 if test -f "$script_dir/firsttime.txt"; then
@@ -162,11 +168,3 @@ echo "****************"
 
 bash $script_dir/mcu.sh
 
-
-function get_klipper_python_ver() {
-  [[ ! -d ${KLIPPY_ENV} ]] && return
-
-  local version
-  version=$("${KLIPPY_ENV}"/bin/python --version 2>&1 | cut -d" " -f2 | cut -d"." -f1)
-  echo "${version}"
-}
