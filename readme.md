@@ -1,8 +1,12 @@
 to use macro belt_tension and input_shaper:
 install gshell_command by kiauh and use example file (shell_command.cfg)
-copy intere /script folder into /home/your_user/klipper_config/
-and insert shell_command.cfg where is printer.cfg, overwritting the one iet present
-restart klipper and use macros!
+copy intere /script folder and input_shaper.cfg into /home/your_user/klipper_config/
+insertinf it where is printer.cfg
+include config into printer.cfg by editing printer.cfg adding this line at beginning:
+
+[include input_shaper.cfg]
+
+save printer.cfg and restart klipper and use macros!
 enjoy!!!
 
 
