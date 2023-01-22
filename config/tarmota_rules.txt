@@ -20,7 +20,11 @@ preparazione smart plug TASMOTA
 ### switch3 (connesso allo switch fisico, cioè S1/S2)
  
 ///poi da consolle scrivete o copiate i seguenti comandi:
- 
+///settare mqtt broker by console tasmota:
+
+///Backlog mqtthost <mqtt_broker_address>; mqttport <mqtt_broker_port>; mqttuser <username>; mqttpassword <password>; topic <device_topic>
+
+
 pulsetime2 10 
 [e poi premi INVIO]
  
