@@ -87,6 +87,16 @@ path = ~/kiauh
 origin = https://github.com/th33xitus/kiauh.git
 managed_services = klipper moonraker
 
+[update_manager LinearMovevementAnalysis]
+type = git_repo
+path = ~/klipper_linear_movement_analysis
+primary_branch = main
+origin = https://github.com/worksasintended/klipper_linear_movement_analysis.git
+install_script = install.sh
+env = ~/klippy-env/bin/python
+requirements = requirements.txt
+managed_services = klipper
+
 [mqtt]
 address = 192.168.1.191
 port = 1883
