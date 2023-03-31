@@ -7,7 +7,7 @@ cat ${SD_PATH}/${2} > /tmp/plrtmpA.$$
 
 isInFile=$(cat /tmp/plrtmpA.$$ | grep -c "thumbnail")
 if [ $isInFile -eq 0 ]; then
-     echo 'M109 S190.0' > ${SD_PATH}/plr.gcode
+     echo 'M109 S${1}' > ${SD_PATH}/plr.gcode
      cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' | grep -m 1 ' Z' | sed -ne 's/.* Z\([^ ]*\)/SET_KINEMATIC_POSITION Z=\1/p' >> ${SD_PATH}/plr.gcode
 else
     sed -i '1s/^/;start copy\n/' /tmp/plrtmpA.$$
@@ -32,6 +32,7 @@ cat /tmp/plrtmpA.$$ | sed -ne '/;End of Gcode/,$ p' | tr '\n' ' ' | sed -ne 's/ 
 tac /tmp/plrtmpA.$$ | sed -e '/ Z'${1}'[^0-9]*$/q' | tac | tail -n+2 | sed -e '/ Z[0-9]/ q' | tac | sed -e '/ E[0-9]/ q' | sed -ne 's/.* E\([^ ]*\)/G92 E\1/p' >> ${SD_PATH}/plr.gcode
 echo 'G91' >> ${SD_PATH}/plr.gcode
 echo 'G1 Z-5' >> ${SD_PATH}/plr.gcode
+echo 'G1 F200 E0.5' >> ${SD_PATH}/plr.gcode
 echo 'G90' >> ${SD_PATH}/plr.gcode
 # cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' >> ${SD_PATH}/plr.gcode
 tac /tmp/plrtmpA.$$ | sed -e '/ Z'${1}'[^0-9]*$/q' | tac | tail -n+2 | sed -ne '/ Z/,$ p' >> ${SD_PATH}/plr.gcode
