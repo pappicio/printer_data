@@ -7,14 +7,14 @@ cat ${SD_PATH}/${2} > /tmp/plrtmpA.$$
 
 isInFile=$(cat /tmp/plrtmpA.$$ | grep -c "thumbnail")
 if [ $isInFile -eq 0 ]; then
-     echo 'M109 S${1}' > ${SD_PATH}/plr.gcode
+     echo 'M109 S${3}' > ${SD_PATH}/plr.gcode
      cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' | grep -m 1 ' Z' | sed -ne 's/.* Z\([^ ]*\)/SET_KINEMATIC_POSITION Z=\1/p' >> ${SD_PATH}/plr.gcode
 else
     sed -i '1s/^/;start copy\n/' /tmp/plrtmpA.$$
     sed -n '/;start copy/, /thumbnail end/ p' < /tmp/plrtmpA.$$ > ${SD_PATH}/plr.gcode
     echo ';' >> ${SD_PATH}/plr.gcode
     echo '' >> ${SD_PATH}/plr.gcode
-    echo 'M109 S190.0' >> ${SD_PATH}/plr.gcode
+    echo 'M109 S${3}' >> ${SD_PATH}/plr.gcode
     cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' | grep -m 1 ' Z' | sed -ne 's/.* Z\([^ ]*\)/SET_KINEMATIC_POSITION Z=\1/p' >> ${SD_PATH}/plr.gcode    
 fi
 
