@@ -1,0 +1,294 @@
+###power off STAMPANTE
+
+[delayed_gcode _power_off]
+initial_duration: 0
+gcode:
+  {% if printer.extruder.temperature > 50 %}
+    UPDATE_DELAYED_GCODE ID=_power_off DURATION=1
+  {% else %}
+    UPDATE_DELAYED_GCODE ID=_power_off DURATION=0
+    {action_call_remote_method("set_device_power", device="Spegni", state="on")}
+  {% endif %}
+ 
+[gcode_macro M81]
+gcode:
+  UPDATE_DELAYED_GCODE ID=_power_off DURATION=1
+
+
+#####################################################################
+
+
+spegni raspberry e dopo 20 sec anche tasmota
+PAPPICIO
+       
+/////////////////////////////////////////////////////////////////////////
+////ritardo 20 secondi spegnimento relay mentre spegne raspberry
+/// sonoff mini o basic (o quello che vuoi ma...) con tasmota:
+///relay1 = relay fisico
+///relay2=virtuale assegnato ad un pin ma inesistente
+///relay3=virtuale assegnato ad un pin ma inesistente
+///pulsante fisico del sonoff assegnato come
+///button-3, associato al relay3 virtuale!!!
+/// ABILITARE HTTP API sul dispositivo tasmota
+#####################################################
+preparazione smart plug TASMOTA 
+#####################################################
+ 
+///caricare questo template (modello) sul sonoff tasmota (fatto su un sonoff mini)
+ 
+{"NAME":"Stampante3D","GPIO":[34,1,1,1,162,1,1,1,224,288,225,226,1,1],"FLAG":0,"BASE":18}
+ 
+### cmq deve avere: relay1 (collegato al reale relay), relay2 e relay3 (virtuali connessi ad altri pin vuoti)
+### button3 (connesso al pin del button)
+### switch3 (connesso allo switch fisico, cioè S1/S2)
+ 
+///poi da consolle scrivete o copiate i seguenti comandi:
+ 
+pulsetime2 10 
+[e poi premi INVIO]
+ 
+pulsetime3 10
+[e poi premi INVIO]
+ 
+///ora i 2 relay virtuali 2 e 3 sono temporizzati, vanno ad ON per 1 decimo di secondo e poi tornano a OFF, servono cosi!!!
+///sempre su console inseriamo questi rule
+///seleziona da 
+ 
+rule1 
+fno a 
+rule1 on
+ 
+///copia e incolla tutto nella nella console tasmota e PREMI INVIO 
+Rule1
+ ON system#boot DO var1 0 ENDON
+ ON power1#state==1 do var1 1 endon
+ ON power1#state==0 do var1 0 endon
+ ON power2#state==1 do if (var1==1) Delay 200; power1 toggle else power1 toggle endif;  endon 
+rule1 on
+ 
+#####################################################
+///seleziona da rule2 fino a rule2 on
+///copia e incolla tutto nella nella console tasmota e PREMI INVIO
+///_spegnistampante è la macro dello spegnimento di tutto....
+///rule2  serve solo quando premete il tasto sul sonoff, fa la procedura di spegnimento raspberry/tutto...
+ 
+IMPORTANTE:
+///192.168.1.195 è il mio IP di klipper, a te sarà diverso, quindi devi cambiarlo con il vero IP del tuo Raspberry/TVBOX Klipper
+#####################################################
+ 
+ 
+Rule2
+ ON power3#state==1 do if (var1==1) websend [192.168.1.195] /printer/gcode/script?script=spegnistampante else power2 ON endif;  endon 
+rule2 on
+ 
+ 
+ 
+###rule1 si capisce, 1 relay  (power1) fisico e 1 virtuale (power2)
+###rule2 altro relay virtuale (power3) e pulsante connesso ad esso, (button3) cosi se vuoi accendere o, 
+###se vuoi spegnere invia comando a moonraker di eseguire la macro nascosta: _spegnistampante
+ 
+#####################################################
+preparazione config klipper
+#####################################################
+ 
+ 
+per eseguire comandi shell da klipper, con kiauh dovete installare Gshell_command
+[opzione 4 da Kiauh: "advanced" ]
+poi
+[opzione 8: " [G-Code Shell Command]"]
+ 
+ok, ora possiamo continuare:
+ 
+#####################################################
+ 
+su moonraker.cfg
+ 
+#####################################################
+[power spegni_stampante]
+type: klipper_device
+object_name: gcode_macro _spegnistampante
+locked_while_printing: true
+#####################################################
+ 
+su printer.cfg
+ 
+#####################################################
+[include spegnistampante.cfg]
+#####################################################
+ 
+sulla macro [end_print], come ultima riga aggiungete:
+ 
+#####################################################
+  _inizio_spegnimento
+#####################################################
+ 
+mentre all'inizio della macro [start_print], come una delle primerighe aggiungete:
+ 
+#####################################################
+  _annulla_spegnimento
+#####################################################
+ 
+poi create un nuovo file dalla shell scrivendo:
+ 
+///da shell ssh scrivi:
+nano /home/pi/printer_config/spegnistampante.cfg
+###incollaci dentro tutto quello che segue tra le due "#####################################################":
+ 
+##################################################
+ 
+ 
+### to enalbe M117
+[display_status]
+ 
+### to enable M118
+[respond]
+default_type: echo
+ 
+[gcode_macro _inizio_spegnimento]
+gcode:
+  UPDATE_DELAYED_GCODE ID=_done_shutdown_timer DURATION=1
+ 
+ 
+ 
+[gcode_macro annulla_spegnimento]
+gcode:
+   m117 Spegnimento Stampante Annullato...
+   m118 Spegnimento Stampante Annullato...
+   UPDATE_DELAYED_GCODE ID=_timer DURATION=0
+   SET_GCODE_VARIABLE MACRO=spegnistampante VARIABLE=value VALUE=0
+   SET_GCODE_VARIABLE MACRO=_incrementa VARIABLE=start VALUE=31
+   UPDATE_DELAYED_GCODE ID=_done_shutdown_timer DURATION=0
+ 
+ 
+ 
+[delayed_gcode _done_shutdown_timer]
+initial_duration: 0
+gcode:
+  {% if printer.extruder.temperature > 50 %}
+    UPDATE_DELAYED_GCODE ID=_done_shutdown_timer DURATION=1
+  {% else %}
+    UPDATE_DELAYED_GCODE ID=_done_shutdown_timer DURATION=0
+    _incrementa
+  {% endif %}
+ 
+[gcode_macro spegnistampante]
+variable_value: 0
+gcode:
+ 
+  {% if printer.virtual_sdcard.printing %}
+    m117 Stampa in corso, impossibile Spegnere
+    m118 Stampa in corso, impossibile Spegnere
+  {% else %}
+    {% if value == 0 %}
+      SET_GCODE_VARIABLE MACRO=spegnistampante VARIABLE=value VALUE=1
+      {% if printer.extruder.temperature > 50 %}
+        m117 Avvio procedura spegnimento, Hotend caldo attendo < 50 gradi
+        m118 Avvio procedura spegnimento, Hotend caldo attendo < 50 gradi
+        SET_GCODE_VARIABLE MACRO=spegnistampante VARIABLE=value VALUE=1
+        #Turn off bed, extruder, and fan
+        M140 S0
+        M104 S0
+        M106 S0
+        _inizio_spegnimento
+      {% else %}
+        SET_GCODE_VARIABLE MACRO=spegnistampante VARIABLE=value VALUE=1
+        m117 Spengo STAMPANTE...
+        m118 Spengo STAMPANTE...
+       _inizio_spegnimento
+      {% endif %}
+    {% else %}
+      m117 Spegnimento Stampante Annullato...
+      m118 Spegnimento Stampante Annullato...
+      UPDATE_DELAYED_GCODE ID=_timer DURATION=0
+      SET_GCODE_VARIABLE MACRO=spegnistampante VARIABLE=value VALUE=0
+      SET_GCODE_VARIABLE MACRO=_incrementa VARIABLE=start VALUE=31
+      UPDATE_DELAYED_GCODE ID=_done_shutdown_timer DURATION=0
+    {% endif %}
+  {% endif %}
+ 
+ 
+ 
+ 
+[gcode_macro _spegnistampanteora]
+gcode:
+    RUN_SHELL_COMMAND CMD=invia_comando_tasmota
+    RUN_SHELL_COMMAND CMD=spegni_raspberry
+ 
+[gcode_shell_command spegni_raspberry]
+    command: sudo halt
+    timeout: 60.
+    verbose: True
+ 
+[gcode_shell_command invia_comando_tasmota]
+    command: curl http://192.168.1.127/cm?cmnd=Power2%20ON
+    timeout: 60.
+    verbose: True
+ 
+[gcode_macro _incrementa]
+variable_start: 31
+gcode:
+   UPDATE_DELAYED_GCODE ID=_timer DURATION=1
+ 
+[delayed_gcode _timer]
+initial_duration: 0
+gcode:
+  {% set curr = printer["gcode_macro _incrementa"].start|int - 1 %}
+  ###{% set fine = 10|int %}  ### > 300 signigica 5 minuti, 600=10 minuti
+  SET_GCODE_VARIABLE MACRO=_incrementa VARIABLE=start VALUE={curr}
+  {% if curr < 1 %}
+    UPDATE_DELAYED_GCODE ID=_timer DURATION=0
+    m117 Spengoo Stampante!!!
+    M118 Spengoo Stampante!!!
+    _spegnistampanteora
+  {% else %}
+    UPDATE_DELAYED_GCODE ID=_timer DURATION=1
+    m117 Spegnimento Stampante tra:... {curr} secondi
+    M118 Spegnimento Stampante tra:... {curr} secondi
+  {% endif %}
+ 
+ 
+ 
+ 
+ 
+##################################################
+ 
+Ctrl+o per salvare il file e premi invio
+Ctrl+x per uscire e premi INVIO
+ 
+finito.
+ora, quando termina la stampa solo quando hotend scende sotto i 50 gradi ([delayed_gcode _done_shutdown_timer] ), inizia la procedura di spegnimento, spegne raspberry e dopo 20 secondi, spegne anche il plug tasmota!!!
+ 
+The End!
+
+
+
+
+
+
+######################################################################
+to change ip in tasmota to 192.168.0.210
+ 
+type in console:
+ 
+ipaddress1 192.168.0.210
+ipaddress2 192.168.0.1
+ipaddress3 255.255.255.0
+ 
+restart 1
+ 
+First post when searching google for "Tasmota static ip"
+I too need static IPs.
+My ISP modem/router has a maximum DHCP range of 2-26. This fills pretty quick and I routinely assign IPs at 27 and above.
+IP reservation is not reliable as the ISP might randomly reset the router.
+ 
+For the sake of it, I'll copy/paste from doc, it was quite obscure why ipaddress1/2/3/4 (yes, RTFM, but it usually starts with a Google search)
+ 
+IPAddress Set networking IP (XXX.XXX.XXX.XXX) addresses
+IPAddress1 = set device IP address
+0.0.0.0 = use dynamic IP address (DHCP)
+XXX.XXX.XXX.XXX = set static IP address
+IPAddress2 = set gateway IP address
+IPAddress3 = set subnet mask
+IPAddress4 = set DNS server IP address
+ 
+follow IPAddress commands with restart 1 to apply changes
