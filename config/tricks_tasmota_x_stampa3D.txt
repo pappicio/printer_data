@@ -84,6 +84,7 @@ rule2 on
 rule3
  ON Power4#state=1 DO backlog Power3 1 ENDON
  ON Power1#state=0 DO backlog Power4 0 ENDON
+ ON Power1#state=1 DO backlog Power4 1 ENDON
 rule3 on
  
 ###rule1 si capisce, 1 relay  (power1) fisico e 1 virtuale (power2)
