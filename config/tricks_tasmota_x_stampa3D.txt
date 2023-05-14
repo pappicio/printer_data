@@ -81,11 +81,7 @@ Rule2
  ON power3#state==1 do if (var1==1) websend [192.168.1.195] /printer/gcode/script?script=spegnistampante else power2 ON endif;  endon 
 rule2 on
  
-rule3
- ON Power4#state=1 DO backlog Power3 1 ENDON
- ON Power1#state=0 DO backlog Power4 0 ENDON
- ON Power1#state=1 DO backlog Power4 1 ENDON
-rule3 on
+ 
  
 ###rule1 si capisce, 1 relay  (power1) fisico e 1 virtuale (power2)
 ###rule2 altro relay virtuale (power3) e pulsante connesso ad esso, (button3) cosi se vuoi accendere o, 
