@@ -1,5 +1,12 @@
 #!/bin/bash
 
+shopt -s expand_aliases
+if [ -n "$DEBUG" ] ; then
+  alias goto="cat >/dev/null <<"
+else
+  alias goto=":"
+fi
+
 actual_path=$(readlink -f "${BASH_SOURCE[0]}")
 script_dir=$(dirname "$actual_path")
 read usb < $script_dir/serial_by_id.txt
@@ -11,8 +18,17 @@ KLIPPY_ENV="${HOME}/klippy-env"
 
 python_version=$("${KLIPPY_ENV}"/bin/python --version 2>&1 | cut -d" " -f2 | cut -d"." -f1)
 
-echo Klipper Python version: $python_version
+echo "****************"
+echo "****************"
+echo ""
+
+echo Klipper Python version is: $python_version
 ###exit 0
+echo ""
+
+echo "****************"
+echo "****************"
+echo ""
 
 
 if test -f "$script_dir/firsttime.txt"; then
@@ -126,18 +142,30 @@ wait $pid
 
 sudo service klipper stop 
 
- if make flash FLASH_DEVICE="${usb}"; then
+riprova=true
+
+GOTO_1
+
+  if make flash FLASH_DEVICE="${usb}"; then
     echo "Flashing successfull!"
   else
     echo "Flashing failed!"
     echo "Please read the console output above!"
     echo "I'm trying to flash in boot mode..."
-     if make flash FLASH_DEVICE="${boot}"; then
+    if make flash FLASH_DEVICE="${boot}"; then
       echo "Flashing successfull!"
     else
-      echo "Flashing failed!"
-      echo "restart printer and try again!!!!!"
-      exit
+     
+      # ...do something interesting...
+      if $riprova ; then
+        echo "Flashing failed... retry..."
+        riprova=false
+        goto GOTO_1
+      else
+        echo "Flashing failed twice..."
+        echo "restart printer and try again!!!!!"
+        exit
+      fi
     fi
   fi
  
