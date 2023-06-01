@@ -7,6 +7,12 @@ else
   alias goto=":"
 fi
 
+riprova=true
+
+GOTO_1
+
+
+
 actual_path=$(readlink -f "${BASH_SOURCE[0]}")
 script_dir=$(dirname "$actual_path")
 read usb < $script_dir/serial_by_id.txt
@@ -142,9 +148,7 @@ wait $pid
 
 sudo service klipper stop 
 
-riprova=true
-
-GOTO_1
+ 
 
   if make flash FLASH_DEVICE="${usb}"; then
     echo "Flashing successfull!"
