@@ -58,12 +58,14 @@ rule1
 fno a 
 rule1 on
  
-////setta longpress su switch con 1 (0) secondo per il trigger
-Backlog SwitchMode 5; SetOption32 10
+////setta longpress su switch con 3(0) secondi per il trigger
+////nella console quindi scrivere ilseguente comando
+Backlog SwitchMode 5; SetOption32 30
+
 ///copia e incolla tutto nella nella console tasmota e PREMI INVIO 
 Rule1
- ON switch3#state=3 DO power1#state==0 ENDON
  ON system#boot DO var1 0 ENDON
+ ON button3#state=3 DO power1 0 ENDON
  ON power1#state==1 do var1 1 endon
  ON power1#state==0 do var1 0 endon
  ON power2#state==1 do if (var1==1) Delay 200; power1 toggle else power1 toggle endif;  endon 
