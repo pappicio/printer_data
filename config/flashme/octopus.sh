@@ -8,7 +8,6 @@ else
 fi
 
 riprova=true
-
 GOTO_1
 
 
@@ -159,7 +158,6 @@ sudo service klipper stop
     if make flash FLASH_DEVICE="${boot}"; then
       echo "Flashing successfull!"
     else
-     
       # ...do something interesting...
       if $riprova ; then
         echo "Flashing failed... retry..."
