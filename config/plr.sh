@@ -65,7 +65,9 @@ if [ $isInFile -eq 0 ]; then
 	echo G0 F3000 Z${var} >> ${SD_PATH}/plr.gcode
         cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' | grep -m 1 ' Z' | sed -ne 's/.* Z\([^ ]*\)/SET_KINEMATIC_POSITION Z=\1/p' >> ${SD_PATH}/plr.gcode    
         echo ${6} >> ${SD_PATH}/plr.gcode
+	echo 'Abbasso velocità di stampa al 30%...' >> ${SD_PATH}/plr.gcode
         echo M220 S30 >> ${SD_PATH}/plr.gcode
+	echo G4 P3000 >> ${SD_PATH}/plr.gcode
     fi
 
 else
@@ -122,7 +124,9 @@ else
 	echo G0 F3000 Z${var} >> ${SD_PATH}/plr.gcode
         cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' | grep -m 1 ' Z' | sed -ne 's/.* Z\([^ ]*\)/SET_KINEMATIC_POSITION Z=\1/p' >> ${SD_PATH}/plr.gcode    
        	echo ${6} >> ${SD_PATH}/plr.gcode
+        echo 'Abbasso velocità di stampa al 30%...' >> ${SD_PATH}/plr.gcode
         echo M220 S30 >> ${SD_PATH}/plr.gcode
+	echo G4 P3000 >> ${SD_PATH}/plr.gcode
 
     fi
 fi
