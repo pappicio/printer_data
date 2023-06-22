@@ -1,6 +1,7 @@
 #!/bin/bash
 ############################################
-SD_PATH=/home/pi/printer_data/gcodes
+###SD_PATH=/home/pi/printer_data/gcodes
+SD_PATH=~/printer_data/gcodes
 ############################################ 
 
 var=$4  
