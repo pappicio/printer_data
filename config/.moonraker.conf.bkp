@@ -26,21 +26,19 @@ trusted_clients =
 	::1/128
 	192.168.1.0/24
 
+[octoprint_compat]
+
 [history]
 
 [update_manager]
-enable_auto_refresh = True
-
-[update_manager fluidd]
-type = web
-repo = cadriel/fluidd
-path = ~/fluidd
+enable_auto_refresh = false
 
 [update_manager timelapse]
 type = git_repo
 primary_branch = main
 path = ~/moonraker-timelapse
 origin = https://github.com/mainsail-crew/moonraker-timelapse.git
+managed_services = klipper moonraker
 
 [power spegni_stampante]
 type = klipper_device
@@ -58,8 +56,10 @@ object_name = gcode_macro set_neopixel
 
 [timelapse]
 enabled = True
-gcode_verbose = False
+mode = layermacro
 autorender = False
+output_path = ~/timelapse/
+gcode_verbose = True
 
 [update_manager mainsail]
 type = web
@@ -86,16 +86,6 @@ type = git_repo
 path = ~/kiauh
 origin = https://github.com/th33xitus/kiauh.git
 managed_services = klipper moonraker
-
-[update_manager LinearMovevementAnalysis]
-type = git_repo
-path = ~/klipper_linear_movement_analysis
-primary_branch = main
-origin = https://github.com/worksasintended/klipper_linear_movement_analysis.git
-install_script = install.sh
-env = ~/klippy-env/bin/python
-requirements = requirements.txt
-managed_services = klipper
 
 [mqtt]
 address = 192.168.1.191
