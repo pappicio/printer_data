@@ -220,6 +220,11 @@ gcode:
     verbose: True
  
 [gcode_shell_command invia_comando_tasmota]
+
+#altri comandi http tasmota
+##( sendHttpGetRequest("http://myIP/cm?cmnd=Pulsetime1%20128") )
+##( sendHttpGetRequest("http://myIP/cm?cmnd=Power1%20TOGGLE")  )
+
     command: curl http://192.168.1.127/cm?cmnd=Power2%20ON
     timeout: 60.
     verbose: True
