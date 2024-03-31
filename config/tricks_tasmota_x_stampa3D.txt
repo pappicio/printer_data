@@ -41,9 +41,7 @@ preparazione smart plug TASMOTA
 ### cmq deve avere: relay1 (collegato al reale relay), relay2 e relay3 (virtuali connessi ad altri pin vuoti)
 ### button3 (connesso al pin del button)
 ### switch3 (connesso allo switch fisico, cioè S1/S2)
-
-power4
-
+ 
 ///poi da consolle scrivete o copiate i seguenti comandi:
  
 pulsetime2 10 
@@ -82,11 +80,7 @@ IMPORTANTE:
 Rule2
  ON power3#state==1 do if (var1==1) websend [192.168.1.195] /printer/gcode/script?script=spegnistampante else power2 ON endif;  endon 
 rule2 on
-
-rule3 
-ON Power4#state=1 DO backlog Power3 1 ENDON  ON Power1#state=0 DO backlog Power4 0 ENDON  ON Power1#state=1 DO backlog Power4 1 ENDON
-rule3 on
-
+ 
  
  
 ###rule1 si capisce, 1 relay  (power1) fisico e 1 virtuale (power2)
@@ -226,11 +220,6 @@ gcode:
     verbose: True
  
 [gcode_shell_command invia_comando_tasmota]
-
-#altri comandi http tasmota
-##( sendHttpGetRequest("http://myIP/cm?cmnd=Pulsetime1%20128") )
-##( sendHttpGetRequest("http://myIP/cm?cmnd=Power1%20TOGGLE")  )
-
     command: curl http://192.168.1.127/cm?cmnd=Power2%20ON
     timeout: 60.
     verbose: True

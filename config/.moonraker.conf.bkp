@@ -59,7 +59,9 @@ enabled = True
 mode = layermacro
 autorender = False
 output_path = ~/timelapse/
-gcode_verbose = True
+gcode_verbose = False
+parkhead = False
+fw_retract = True
 
 [update_manager mainsail]
 type = web
@@ -96,4 +98,22 @@ mqtt_protocol = v3.1.1
 enable_moonraker_api = True
 status_objects = 
 default_qos = 0
+
+[power luci_sulle_scale]
+type = mqtt
+command_topic = cmnd/lightonsteps/POWER
+command_payload = 
+	{command}
+retain_command_state = False
+query_topic = cmnd/tasmota_switch/POWER
+state_topic = stat/lightonsteps/POWER
+state_response_template = 
+	{payload}
+query_after_command = False
+
+[update_manager fluidd]
+type = web
+channel = stable
+repo = fluidd-core/fluidd
+path = ~/fluidd
 

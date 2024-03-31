@@ -110,7 +110,19 @@ if test -f "$script_dir/load1mcu.txt"; then
     echo ""
 else
     echo 'creato per individuare se è la prima esecuzione di questo scritpt!!!!!' > $script_dir/load1mcu.txt
-    cd ~/klipper &&  make menuconfig
+
+    cd ~/klipper 
+  
+    if ( python_version == 3 ); then
+        make PYTHON=python3 menuconfig
+        make PYTHON=python3
+    else
+        make PYTHON=python2 menuconfig
+        make PYTHON=python2
+    fi
+
+
+    // cd ~/klipper &&  make menuconfig
     pid=$!
     wait $pid
 fi

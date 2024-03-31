@@ -1,0 +1,1 @@
+printer.configfile.settings.stepper_z .position_min : 0.0
