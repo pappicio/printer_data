@@ -1,0 +1,4 @@
+
+*.gcode
+/gcodes
+/logs
