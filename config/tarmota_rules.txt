@@ -47,12 +47,22 @@ Rule1
  ON power2#state==1 do if (var1==1) Delay 200; power1 toggle else power1 toggle endif;  endon 
 rule1 on
  
+
 #####################################################
 ///seleziona da rule2 fino a rule2 on
 ///copia e incolla tutto nella nella console tasmota e PREMI INVIO
 ///_spegnistampante è la macro dello spegnimento di tutto....
 ///rule2  serve solo quando premete il tasto sul sonoff, fa la procedura di spegnimento raspberry/tutto...
- 
+
+rule2
+ON power3#state==1 do if (var1==1) websend [192.168.1.195] /printer/gcode/script?script=spegnistampante else power2 ON endif;  endon
+rule2 on
+
+rule3
+ON Power4#state=1 DO backlog Power3 1 ENDON  ON Power1#state=0 DO backlog Power4 0 ENDON  ON Power1#state=1 DO backlog Power4 1 ENDON
+rule3 on
+
+
 IMPORTANTE:
 ///192.168.1.195 è il mio IP di klipper, a te sarà diverso, quindi devi cambiarlo con il vero IP del tuo Raspberry/TVBOX Klipper
 #####################################################
