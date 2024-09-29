@@ -116,9 +116,7 @@ interval:
               else: 
                 - lambda: |-
                     id(stato_stampante).publish_state("spenta...");
-                
-      - script.execute: stato
-      #- script.wait: stato 
+    
 
 switch:
   - platform: gpio
@@ -319,33 +317,20 @@ script:
   - id: checkurl
     then:
       - http_request.get:
-                url: "http://192.168.1.195/printer/gcode/script?script=_stampante_accesa"
-                capture_response: true
-                on_response:
-                  then:
-                    - lambda: |-
-                        json::parse_json(body, [](JsonObject root) -> bool {
-                        id(klipperON).publish_state(root["result"]);
-                        auto call = id(klipperON).make_call();
-                        call.set_value((root["result"]));
-                        call.perform();
-                        return true;
-                        });
-  - id: stato
-    then:
- 
-       
-      - http_request.get:
           url: "http://192.168.1.195/printer/objects/query?webhooks&virtual_sdcard&print_stats"
           capture_response: true
           on_response:
             then:
-            - lambda: |-
-                json::parse_json(body, [](JsonObject doc) -> bool {
-                JsonObject result_status = doc["result"]["status"]["print_stats"];
-                const char* result_status_print_stats_state = result_status["state"]; // "standby"
-                id(stato_stampante).publish_state(result_status_print_stats_state);
-                ESP_LOGD("main", "stauts: %s", result_status_print_stats_state);
-                return true;
-                });
-               
+              - lambda: |-
+                  json::parse_json(body, [](JsonObject doc) -> bool {
+                  id(klipperON).publish_state(doc["result"]);
+                  auto call = id(klipperON).make_call();
+                  call.set_value((doc["result"]));
+                  call.perform();
+                  JsonObject result_status = doc["result"]["status"]["print_stats"];
+                  const char* result_status_print_stats_state = result_status["state"]; // "standby"
+                  id(stato_stampante).publish_state(result_status_print_stats_state);
+                  ESP_LOGD("main", "stauts: %s", result_status_print_stats_state);
+                  return true;
+                  });
+ 
