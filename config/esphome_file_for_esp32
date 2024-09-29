@@ -14,17 +14,7 @@ esphome:
   on_boot:
     priority: -100
     then:
-    #- switch.turn_off: relay
-    #- if:
-    #    condition:
-    #      lambda: |-
-    #        return id(isrelayON) == true ;
-    #    then:   
-    #      - logger.log: "var: true, accendo relay"
-         # - switch.turn_on: relay
-    #    else:
-    #      - logger.log: "var: false, spengo relay"
-         # - switch.turn_off: relay
+  
 esp32:
   board: esp32-c3-devkitm-1
   framework:
@@ -113,8 +103,22 @@ text_sensor:
 interval:
   - interval: 3sec
     then:
+      - number.set:
+          id: klipperON
+          value: -1
+      - script.execute: checkurl
+      #- script.wait: checkurl
+      - if:
+              condition:
+                - lambda: |-
+                    return (id(klipperON).state == 0 )  ;
+              then:           
+              else: 
+                - lambda: |-
+                    id(stato_stampante).publish_state("spenta...");
+                
       - script.execute: stato
-      #- script.wait: stato
+      #- script.wait: stato 
 
 switch:
   - platform: gpio
@@ -165,8 +169,8 @@ switch:
                 id: klipperON
                 value: -1
             
-            - script.execute: checkurl
-            - script.wait: checkurl
+            - script.execute: spegnila
+            - script.wait: spegnila
             - if:
                 condition:
                   - lambda: |-
@@ -189,7 +193,9 @@ switch:
       - switch.turn_off: relay
       - delay: 500ms
       - switch.turn_off: forceTurnOFF
-
+      - text_sensor.template.publish:
+          id: stato_stampante
+          state: "spenta..."
   - platform: template
     name: "test"
     internal: true
@@ -233,6 +239,7 @@ switch:
                       id(incorso) = false ;     
                   - switch.turn_off: relay
                   - switch.turn_off: spegnitimer
+            
     on_turn_off:
       - lambda: |-
           id(incorso) = false ;     
@@ -294,7 +301,7 @@ binary_sensor:
             else:
               - switch.turn_on: relay
 script:
-  - id: checkurl
+  - id: spegnila
     then:
       - http_request.get:
                 url: "http://192.168.1.195/printer/gcode/script?script=spegnistampante"
@@ -309,11 +316,24 @@ script:
                         call.perform();
                         return true;
                         });
+  - id: checkurl
+    then:
+      - http_request.get:
+                url: "http://192.168.1.195/printer/gcode/script?script=_stampante_accesa"
+                capture_response: true
+                on_response:
+                  then:
+                    - lambda: |-
+                        json::parse_json(body, [](JsonObject root) -> bool {
+                        id(klipperON).publish_state(root["result"]);
+                        auto call = id(klipperON).make_call();
+                        call.set_value((root["result"]));
+                        call.perform();
+                        return true;
+                        });
   - id: stato
     then:
-      - text_sensor.template.publish:
-          id: stato_stampante
-          state: "spenta..."
+ 
        
       - http_request.get:
           url: "http://192.168.1.195/printer/objects/query?webhooks&virtual_sdcard&print_stats"
@@ -321,14 +341,11 @@ script:
           on_response:
             then:
             - lambda: |-
-                HTTPClient http;
-                http.begin  ("http://192.168.1.195/printer/objects/query?webhooks&virtual_sdcard&print_stats"); 
-                http.GET();
-                DynamicJsonDocument doc(2000);
-                deserializeJson(doc, http.getStream());
-                JsonObject result_status = doc["result"]["status"];
-                JsonObject result_status_print_stats = result_status["print_stats"];
-                const char* result_status_print_stats_state = result_status_print_stats["state"]; // "standby"
+                json::parse_json(body, [](JsonObject doc) -> bool {
+                JsonObject result_status = doc["result"]["status"]["print_stats"];
+                const char* result_status_print_stats_state = result_status["state"]; // "standby"
                 id(stato_stampante).publish_state(result_status_print_stats_state);
                 ESP_LOGD("main", "stauts: %s", result_status_print_stats_state);
-                http.end();
+                return true;
+                });
+               
