@@ -43,16 +43,16 @@ managed_services = klipper moonraker
 [power spegni_stampante]
 type = klipper_device
 object_name = gcode_macro spegnistampante
-locked_while_printing = true
-
-[power Spegnimento_brutale]
-type = tasmota
-address = 192.168.1.127
-locked_while_printing = true
+locked_while_printing = false
 
 [power gestisci_LED]
 type = klipper_device
 object_name = gcode_macro set_neopixel
+
+[power spegnimento_brutale]
+type = klipper_device
+object_name = gcode_macro spegnibrutale
+locked_while_printing = false
 
 [timelapse]
 enabled = True
@@ -90,26 +90,14 @@ origin = https://github.com/th33xitus/kiauh.git
 managed_services = klipper moonraker
 
 [mqtt]
-address = 192.168.1.191
+address = 192.168.1.192
 port = 1883
 username = io
-password = io
+password = Desiree.2012
 mqtt_protocol = v3.1.1
 enable_moonraker_api = True
 status_objects = 
 default_qos = 0
-
-[power luci_sulle_scale]
-type = mqtt
-command_topic = cmnd/lightonsteps/POWER
-command_payload = 
-	{command}
-retain_command_state = False
-query_topic = cmnd/tasmota_switch/POWER
-state_topic = stat/lightonsteps/POWER
-state_response_template = 
-	{payload}
-query_after_command = False
 
 [update_manager fluidd]
 type = web

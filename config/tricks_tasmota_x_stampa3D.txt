@@ -107,7 +107,7 @@ su moonraker.cfg
 [power spegni_stampante]
 type: klipper_device
 object_name: gcode_macro _spegnistampante
-locked_while_printing: true
+locked_while_printing: false
 #####################################################
  
 su printer.cfg
@@ -175,7 +175,7 @@ gcode:
 variable_value: 0
 gcode:
  
-  {% if printer.virtual_sdcard.printing %}
+  {% if printer.idle_timeout.state|upper == "PRINTING" %} 
     m117 Stampa in corso, impossibile Spegnere
     m118 Stampa in corso, impossibile Spegnere
   {% else %}
